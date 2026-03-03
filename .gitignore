@@ -1,3 +1,8 @@
-# Ignore dataset files
-paysimFile.csv
+# Ignore dataset folder
+dataset/
+
+# Or specifically:
+dataset/paysimFile.csv
+
+# Optional: ignore all CSV files
 *.csv
