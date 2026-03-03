@@ -1,0 +1,5 @@
+# Ignore PaySim dataset
+*.csv
+
+# Or more specific:
+paysimFile*.csv
