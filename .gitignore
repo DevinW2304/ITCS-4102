@@ -6,3 +6,6 @@ dataset/paysimFile.csv
 
 # Optional: ignore all CSV files
 *.csv
+
+# Ignore the dataset folder entirely
+dataset/
