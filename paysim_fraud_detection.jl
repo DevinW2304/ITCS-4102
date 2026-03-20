@@ -113,8 +113,21 @@ function is_suspicious(t::Transaction)
     (t.ttype == "TRANSFER" || t.ttype == "CASH_OUT") && t.amount >= 100000.0
 end
 
+
+#sample for testing without csv
+function sample_from_prompt()
+    return Transaction[
+        Transaction(1, "PAYMENT", 9839.64, "C1231006815", "M1979787155", false),
+        Transaction(1, "PAYMENT", 1864.28, "C1666544295", "M2044282225", false),
+        Transaction(1, "TRANSFER", 181.0, "C1305486145", "C553264065", true),
+        Transaction(1, "CASH_OUT", 181.0, "C840083671", "C38997010", true),
+        Transaction(1, "PAYMENT", 11668.14, "C2048537720", "M1230701703", false),
+        Transaction(1, "DEBIT", 5337.77, "C712410124", "C195600860", false),
+        Transaction(1, "CASH_OUT", 229133.94, "C905080434", "C476402209", false)
+    ]
+end
 function main()
-    demo_datatypes_methods()
+    datatypes_methods()
 
     println("=== Simple PaySim Program ===")
 
@@ -122,19 +135,20 @@ function main()
         path = ARGS[1]
         max_rows = length(ARGS) >= 2 ? parse(Int, ARGS[2]) : 20_000
         println("Loading: $path (max_rows=$max_rows)")
-        load_csv_simple(path; max_rows=max_rows)
+        load_csv(path; max_rows=max_rows)
     else
         println("No CSV provided; using a small sample.")
         sample_from_prompt()
     end
 
     # Dict data structure
+    #tracks data for output
     stats = Dict{String, CustomerStats}()
 
     suspicious = Transaction[]
     fraud_count = 0
 
-    # for loop + if/else
+    # for loop
     for t in txns
         # update per-customer stats
         cs = get!(stats, t.nameOrig) do
@@ -144,18 +158,21 @@ function main()
         cs.total_amount += t.amount
 
         if t.isFraud
+            #increase fraud count if fraud
             fraud_count += 1
         end
 
         if is_suspicious(t)
+            #if suspicious, add to list
             push!(suspicious, t)
         end
     end
 
-    # Lambda (anonymous function) demo:
-    # count suspicious transfers (uses map with a lambda)
+    # count suspicious transfers 
     suspicious_transfer_count = sum(map(t -> (t.ttype == "TRANSFER" ? 1 : 0), suspicious))
 
+
+    #output results
     println("\n--- Output ---")
     println("Transactions processed: ", length(txns))
     println("Unique customers (nameOrig): ", length(stats))
@@ -163,7 +180,7 @@ function main()
     println("Suspicious by rule: ", length(suspicious))
     println("Suspicious that are TRANSFER: ", suspicious_transfer_count)
 
-    println("\nExamples (up to 5 suspicious):")
+    println("\nExamples:")
     for t in Iterators.take(suspicious, 5)
         println(" step=", t.step,
                 " type=", t.ttype,
