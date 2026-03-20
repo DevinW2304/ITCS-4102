@@ -1,3 +1,6 @@
+#ITCS 4102
+# Devin Washington, Angel Villar Nolasco, Lavishia Crump
+
 
 using Statistics
 
