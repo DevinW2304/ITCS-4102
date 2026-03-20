@@ -68,6 +68,7 @@ end
 # Create transaction structure from CSV line
 function parse_paysim_line(line::String)
     parts = split(strip(line), ",")
+    #file error handling
     if length(parts) != 11
         throw(ArgumentError("Expected 11 columns, got $(length(parts))"))
     end
@@ -83,12 +84,12 @@ function parse_paysim_line(line::String)
 end
 #Grab csv and 
 function load_csv(path::String; max_rows::Int=20_000)
-    txns = Transaction[]  # Vector to hold transactions
+    txns = Transaction[]  # Vector(array)holds transactions
 
     open(path, "r") do io
-        header = readline(io) # skip header, only need types
+        header = readline(io) # only need types
 
-        # while loop to grab types
+        # loop grabbing types
         while !eof(io) && length(txns) < max_rows
             line = readline(io)
             isempty(strip(line)) && continue
