@@ -1,0 +1,24 @@
+
+PROGRAM 1: DATA TYPES & METHODS
+
+- Uses 4 data types: Int, Float64, String, Bool
+- Demonstrates 2 built-in methods per type (total of 8 methods)
+- Includes data manipulation using sum() and mean()
+
+PROGRAM 2: DATA STRUCTURES & CONTROL STRUCTURES
+
+- Uses multiple data structures:
+  - Structs (Transaction, CustomerStats)
+  - Vectors (txns, suspicious)
+  - Dictionary (stats)
+
+- Uses multiple control structures:
+  - For loop
+  - If/else conditionals
+  - Lambda function line:172
+
+PROGRAM 3: EXCEPTION HANDLING
+
+- Implements exception handling using try/catch
+- Handles invalid CSV lines
+- Includes input validation 
