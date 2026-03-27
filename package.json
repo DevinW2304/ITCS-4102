@@ -1,0 +1,26 @@
+{
+  "name": "itcs-4102",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevinW2304/ITCS-4102.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DevinW2304/ITCS-4102/issues"
+  },
+  "homepage": "https://github.com/DevinW2304/ITCS-4102#readme",
+  "keywords": [],
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "multer": "^2.1.1"
+  }
+}

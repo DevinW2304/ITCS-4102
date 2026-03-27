@@ -183,16 +183,15 @@ function main()
     println("Suspicious by rule: ", length(suspicious))
     println("Suspicious that are TRANSFER: ", suspicious_transfer_count)
 
-    println("\nExamples:")
-    for t in Iterators.take(suspicious, 5)
-        println(" step=", t.step,
-                " type=", t.ttype,
-                " amount=", round(t.amount, digits=2),
-                " orig=", t.nameOrig,
-                " dest=", t.nameDest,
-                " isFraud=", t.isFraud)
-    end
-
+   println("\nClassifications:")
+for t in suspicious
+    println(" step=", t.step,
+            " type=", t.ttype,
+            " amount=", round(t.amount, digits=2),
+            " orig=", t.nameOrig,
+            " dest=", t.nameDest,
+            " isFraud=", t.isFraud)
+end
     println("\n=== End ===")
 end
 

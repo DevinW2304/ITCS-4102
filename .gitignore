@@ -9,3 +9,5 @@ dataset/paysimFile.csv
 
 # Ignore the dataset folder entirely
 dataset/
+
+node_modules/
