@@ -11,3 +11,5 @@ dataset/paysimFile.csv
 dataset/
 
 node_modules/
+
+.DS_Store
