@@ -28,14 +28,4 @@
 
 
 
- function classify_risk(t::Transaction, score::Int)
-    risky_type = t.ttype == "TRANSFER" || t.ttype == "CASH_OUT"
-
-    if risky_type && score >= 9
-        return "HIGH"
-    elseif risky_type && score >= 5
-        return "MEDIUM"
-    end
-
-    return "LOW"
-end
+ 
