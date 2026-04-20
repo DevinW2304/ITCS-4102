@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- page setup -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JL.FraudDetection</title>
-
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Fraud Detection Using Julia</title>
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="loading-bar" id="loadingBar"></div>
 
-  <!-- header -->
+  <!-- top header -->
   <header>
     <div class="header-left">
-      <div class="wordmark">JL.<span>FraudDetection</span></div>
-      <div class="header-tag">Demo Mode</div>
+      <div class="wordmark">Fraud Detection Using Julia</div>
+      <div class="header-tag">ITCS 4102 Final Project</div>
     </div>
 
     <div class="header-right">
       <div class="live-dot" id="liveDot"></div>
       <span id="statusMessage" class="status-text">Idle - click Run to analyze</span>
-      <button id="analyzeButton"><span>▶ Run Demo</span></button>
+      <button id="analyzeButton"><span>Run Demo</span></button>
     </div>
   </header>
 
   <main>
-    <!-- overview -->
+    <!-- top summary -->
     <div class="section-label">Overview</div>
 
     <div class="stats-grid">
@@ -60,7 +54,7 @@
       </div>
 
       <div class="stat-cell warn">
-        <div class="stat-label">Susp. Transfers</div>
+        <div class="stat-label">Suspicious Transfers</div>
         <div class="stat-value" id="suspiciousTransfers">—</div>
         <div class="stat-bar"></div>
       </div>
@@ -72,26 +66,76 @@
       </div>
     </div>
 
-    <!-- main content -->
+    <!-- model output summary -->
+    <div class="section-label">Model Results</div>
+
+    <div class="stats-grid">
+      <div class="stat-cell danger">
+        <div class="stat-label">High Risk</div>
+        <div class="stat-value" id="highRiskCount">—</div>
+        <div class="stat-bar"></div>
+      </div>
+
+      <div class="stat-cell warn">
+        <div class="stat-label">Medium Risk</div>
+        <div class="stat-value" id="mediumRiskCount">—</div>
+        <div class="stat-bar"></div>
+      </div>
+
+      <div class="stat-cell safe">
+        <div class="stat-label">Low Risk</div>
+        <div class="stat-value" id="lowRiskCount">—</div>
+        <div class="stat-bar"></div>
+      </div>
+
+      <div class="stat-cell accent">
+        <div class="stat-label">Precision</div>
+        <div class="stat-value" id="precisionValue">—</div>
+        <div class="stat-bar"></div>
+      </div>
+
+      <div class="stat-cell accent">
+        <div class="stat-label">Recall</div>
+        <div class="stat-value" id="recallValue">—</div>
+        <div class="stat-bar"></div>
+      </div>
+
+      <div class="stat-cell accent">
+        <div class="stat-label">Accuracy</div>
+        <div class="stat-value" id="accuracyValue">—</div>
+        <div class="stat-bar"></div>
+      </div>
+    </div>
+
+    <!-- main dashboard area -->
     <div class="two-col">
-      <!-- table panel -->
+      <!-- results table -->
       <div class="panel">
-        <div class="panel-title">Fraud Classifications</div>
-        <div class="panel-sub">Suspicious transactions flagged by the active rule</div>
+        <div class="panel-title">Flagged Transactions</div>
+        <div class="panel-sub">Transactions returned by the Julia model after applying the scoring rules</div>
 
         <div class="filters">
-          <input type="text" id="searchInput" placeholder="Search origin, destination, type, amount…" />
+          <input type="text" id="searchInput" placeholder="Search type, account, amount, or reason..." />
           <select id="typeFilter">
             <option value="ALL">All Types</option>
             <option value="TRANSFER">TRANSFER</option>
             <option value="CASH_OUT">CASH_OUT</option>
+            <option value="PAYMENT">PAYMENT</option>
+            <option value="DEBIT">DEBIT</option>
+            <option value="CASH_IN">CASH_IN</option>
+          </select>
+          <select id="riskFilter">
+            <option value="ALL">All Risk</option>
+            <option value="HIGH">HIGH</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LOW">LOW</option>
           </select>
           <select id="fraudFilter">
             <option value="ALL">All Labels</option>
             <option value="TRUE">isFraud = True</option>
             <option value="FALSE">isFraud = False</option>
           </select>
-          <input type="number" id="minStepFilter" placeholder="Min step…" min="0" />
+          <input type="number" id="minStepFilter" placeholder="Min step..." min="0" />
         </div>
 
         <div class="results-meta">
@@ -110,10 +154,10 @@
 
             <div class="legend">
               <div class="legend-item">
-                <div class="legend-dot fraud"></div>FRAUD
+                <div class="legend-dot fraud"></div>HIGH
               </div>
               <div class="legend-item">
-                <div class="legend-dot clean"></div>CLEAN
+                <div class="legend-dot clean"></div>MEDIUM
               </div>
             </div>
           </div>
@@ -126,14 +170,17 @@
                 <th>Step</th>
                 <th>Type</th>
                 <th>Amount</th>
+                <th>Risk</th>
+                <th>Score</th>
                 <th>Origin</th>
                 <th>Destination</th>
                 <th>isFraud</th>
+                <th>Reasons</th>
               </tr>
             </thead>
             <tbody id="transactionTableBody">
               <tr>
-                <td colspan="6">
+                <td colspan="9">
                   <div class="empty-state">
                     <div class="empty-icon">◈</div>
                     No data loaded - run the demo to fetch results
@@ -154,11 +201,11 @@
       <!-- side panels -->
       <div>
         <div class="panel panel-stack">
-          <div class="panel-title">Active Detection Rule</div>
-          <div class="panel-sub">Transactions matching all conditions are flagged</div>
+          <div class="panel-title">How the Model Makes Decisions</div>
+          <div class="panel-sub">Main signals used in the scoring process</div>
 
           <div class="rule-entry">
-            <span class="rule-key">Type</span>
+            <span class="rule-key">Transaction Type</span>
             <span class="rule-val">TRANSFER</span>
             <span class="rule-or">or</span>
             <span class="rule-val">CASH_OUT</span>
@@ -166,18 +213,42 @@
 
           <div class="rule-entry">
             <span class="rule-key">Amount</span>
-            <span class="rule-val danger">≥ $100,000</span>
+            <span class="rule-val danger">Large</span>
+            <span class="rule-or">or</span>
+            <span class="rule-val">Medium-Large</span>
           </div>
 
           <div class="rule-entry">
-            <span class="rule-key">Action</span>
-            <span class="rule-val rule-warn">Flag Suspicious</span>
+            <span class="rule-key">Balance Change</span>
+            <span class="rule-val rule-warn">Drains Sender Balance</span>
+          </div>
+
+          <div class="rule-entry">
+            <span class="rule-key">Stronger Signal</span>
+            <span class="rule-val danger">Exact Balance Drain</span>
+          </div>
+
+          <div class="rule-entry">
+            <span class="rule-key">Destination Pattern</span>
+            <span class="rule-val">Balance Anomaly</span>
+          </div>
+
+          <div class="rule-entry">
+            <span class="rule-key">Prior History</span>
+            <span class="rule-val">Sender Average / Earlier Risky Activity</span>
+          </div>
+
+          <div class="rule-entry">
+            <span class="rule-key">Final Output</span>
+            <span class="rule-val">LOW · MEDIUM · HIGH</span>
           </div>
         </div>
 
+      
+
         <div class="panel">
-          <div class="panel-title">Breakdown</div>
-          <div class="panel-sub">Fraud vs suspicious by type</div>
+          <div class="panel-title">Risk Breakdown</div>
+          <div class="panel-sub">High versus medium risk across the main transaction types</div>
 
           <canvas id="breakdownChart" height="180"></canvas>
           <div id="chartFallback" class="chart-fallback">
@@ -192,11 +263,11 @@
   <footer>
     <div class="footer-inner">
       <div>
-        <div class="footer-brand">JL.<span>FraudDetection</span></div>
+        <div class="footer-brand">Fraud Detection Using Julia</div>
         <p class="footer-desc">
-          A rule-based fraud detection demo powered by Julia and the PaySim synthetic dataset.
-          Transactions are flagged using configurable thresholds on transfer type and amount,
-          with results streamed to this dashboard via a Node.js backend.
+          This project is a small fraud detection demonstration built around a Julia backend and a simple HTML interface.
+          The system reads transaction data from a PaySim-style dataset, evaluates each transaction using a rule-based scoring approach,
+          and then classifies it as low, medium, or high risk based on the patterns it finds.
         </p>
       </div>
 
@@ -227,6 +298,7 @@
 
     const searchInput = document.getElementById("searchInput");
     const typeFilter = document.getElementById("typeFilter");
+    const riskFilter = document.getElementById("riskFilter");
     const fraudFilter = document.getElementById("fraudFilter");
     const minStepFilter = document.getElementById("minStepFilter");
 
@@ -235,18 +307,21 @@
     const nextPageBtn = document.getElementById("nextPage");
     const pageInfo = document.getElementById("pageInfo");
 
+    // updates live status text 
     function setStatus(message, state = "idle") {
       statusMessage.textContent = message;
       statusMessage.className = `status-text ${state === "error" ? "error" : state === "ok" ? "ok" : ""}`.trim();
       liveDot.className = "live-dot" + (state === "ok" ? " active" : "");
     }
 
+    // turns he loading bar on while  backend runs
     function setLoading(isLoading) {
       loadingBar.className = "loading-bar" + (isLoading ? " running" : "");
       if (!isLoading) loadingBar.style.width = "0%";
       analyzeButton.disabled = isLoading;
     }
 
+    //  number animation 
     function animateValue(el, target) {
       el.classList.remove("animating");
       void el.offsetWidth;
@@ -254,14 +329,25 @@
       el.classList.add("animating");
     }
 
+    // formats evaluation metrics 
+    function formatMetric(value) {
+      if (value === undefined || value === null || Number.isNaN(Number(value))) return "—";
+      return Number(value).toFixed(4);
+    }
 
-    //load table after run
+    // fills in  summary 
     function renderSummary(data) {
       const transactionsProcessed = data.transactionsProcessed ?? 0;
       const uniqueCustomers = data.uniqueCustomers ?? 0;
       const fraudCount = data.fraudCount ?? 0;
       const suspiciousCount = data.suspiciousCount ?? 0;
       const suspiciousTransferCount = data.suspiciousTransferCount ?? 0;
+      const highRiskCount = data.highRiskCount ?? 0;
+      const mediumRiskCount = data.mediumRiskCount ?? 0;
+      const lowRiskCount = data.lowRiskCount ?? 0;
+      const precision = data.precision ?? 0;
+      const recall = data.recall ?? 0;
+      const accuracy = data.accuracy ?? 0;
 
       animateValue(document.getElementById("totalTransactions"), transactionsProcessed);
       animateValue(document.getElementById("uniqueCustomers"), uniqueCustomers);
@@ -274,6 +360,13 @@
         : 0;
 
       animateValue(document.getElementById("latestStep"), latestStep);
+      animateValue(document.getElementById("highRiskCount"), highRiskCount);
+      animateValue(document.getElementById("mediumRiskCount"), mediumRiskCount);
+      animateValue(document.getElementById("lowRiskCount"), lowRiskCount);
+
+      document.getElementById("precisionValue").textContent = formatMetric(precision);
+      document.getElementById("recallValue").textContent = formatMetric(recall);
+      document.getElementById("accuracyValue").textContent = formatMetric(accuracy);
 
       const values = [
         transactionsProcessed,
@@ -281,7 +374,13 @@
         fraudCount,
         suspiciousCount,
         suspiciousTransferCount,
-        latestStep
+        latestStep,
+        highRiskCount,
+        mediumRiskCount,
+        lowRiskCount,
+        precision * 1000,
+        recall * 1000,
+        accuracy * 1000
       ];
 
       const maxValue = Math.max(...values, 1);
@@ -289,28 +388,35 @@
       document.querySelectorAll(".stat-bar").forEach((bar, index) => {
         setTimeout(() => {
           bar.style.width = ((values[index] / maxValue) * 100) + "%";
-        }, index * 80);
+        }, index * 50);
       });
     }
-    //filter table
+
+    // applies active filters 
     function getFiltered() {
       const query = searchInput.value.trim().toLowerCase();
       const type = typeFilter.value;
+      const risk = riskFilter.value;
       const fraud = fraudFilter.value;
       const minStep = minStepFilter.value === "" ? null : Number(minStepFilter.value);
 
       return allClassifications.filter(item => {
+        const reasonText = Array.isArray(item.reasons) ? item.reasons.join(" ") : "";
         const text = [
           item.step,
           item.type,
           item.amount,
+          item.risk,
+          item.score,
           item.nameOrig,
           item.nameDest,
-          item.isFraud ? "true" : "false"
+          item.isFraud ? "true" : "false",
+          reasonText
         ].join(" ").toLowerCase();
 
         return (query === "" || text.includes(query))
           && (type === "ALL" || item.type === type)
+          && (risk === "ALL" || item.risk === risk)
           && (
             fraud === "ALL" ||
             (fraud === "TRUE" && item.isFraud) ||
@@ -319,7 +425,8 @@
           && (minStep === null || Number(item.step) >= minStep);
       });
     }
-    //show table
+
+    // builds table rows 
     function renderTable() {
       const tbody = document.getElementById("transactionTableBody");
       const resultsCount = document.getElementById("resultsCount");
@@ -341,7 +448,7 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="9">
               <div class="empty-state">
                 <div class="empty-icon">◈</div>
                 No matching transactions
@@ -359,7 +466,7 @@
         <tr>
           <td class="td-step">${item.step}</td>
           <td>
-            <span class="td-type ${item.type.toLowerCase().replace("_", "-")}">
+            <span class="td-type ${String(item.type).toLowerCase().replace("_", "-")}">
               ${item.type}
             </span>
           </td>
@@ -369,6 +476,12 @@
               maximumFractionDigits: 2
             })}
           </td>
+          <td>
+            <span class="badge ${item.risk === "HIGH" ? "fraud" : item.risk === "MEDIUM" ? "clean" : ""}">
+              ${item.risk}
+            </span>
+          </td>
+          <td class="td-step">${item.score ?? "—"}</td>
           <td class="td-addr" title="${item.nameOrig}">${item.nameOrig}</td>
           <td class="td-addr" title="${item.nameDest}">${item.nameDest}</td>
           <td>
@@ -376,20 +489,24 @@
               ${item.isFraud ? "Fraud" : "Clean"}
             </span>
           </td>
+          <td class="td-addr" title="${Array.isArray(item.reasons) ? item.reasons.join(", ") : ""}">
+            ${Array.isArray(item.reasons) ? item.reasons.join(", ") : ""}
+          </td>
         </tr>
       `).join("");
     }
-    //render side chart
+
+    // draws side chart showing high vs medium
     function renderChart() {
       const canvas = document.getElementById("breakdownChart");
       const fallback = document.getElementById("chartFallback");
 
-      const fraudTransfer = allClassifications.filter(item => item.isFraud && item.type === "TRANSFER").length;
-      const fraudCashOut = allClassifications.filter(item => item.isFraud && item.type === "CASH_OUT").length;
-      const cleanTransfer = allClassifications.filter(item => !item.isFraud && item.type === "TRANSFER").length;
-      const cleanCashOut = allClassifications.filter(item => !item.isFraud && item.type === "CASH_OUT").length;
+      const highTransfer = allClassifications.filter(item => item.risk === "HIGH" && item.type === "TRANSFER").length;
+      const highCashOut = allClassifications.filter(item => item.risk === "HIGH" && item.type === "CASH_OUT").length;
+      const mediumTransfer = allClassifications.filter(item => item.risk === "MEDIUM" && item.type === "TRANSFER").length;
+      const mediumCashOut = allClassifications.filter(item => item.risk === "MEDIUM" && item.type === "CASH_OUT").length;
 
-      if (!fraudTransfer && !fraudCashOut && !cleanTransfer && !cleanCashOut) {
+      if (!highTransfer && !highCashOut && !mediumTransfer && !mediumCashOut) {
         fallback.style.display = "block";
         canvas.style.display = "none";
         return;
@@ -407,9 +524,9 @@
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
       const groups = ["TRANSFER", "CASH_OUT"];
-      const fraudValues = [fraudTransfer, fraudCashOut];
-      const cleanValues = [cleanTransfer, cleanCashOut];
-      const maxValue = Math.max(...fraudValues, ...cleanValues, 1);
+      const highValues = [highTransfer, highCashOut];
+      const mediumValues = [mediumTransfer, mediumCashOut];
+      const maxValue = Math.max(...highValues, ...mediumValues, 1);
 
       const padLeft = 8;
       const padRight = 8;
@@ -421,7 +538,7 @@
 
       ctx.clearRect(0, 0, width, height);
 
-      ctx.strokeStyle = "rgba(28,36,48,0.8)";
+      ctx.strokeStyle = "rgba(180, 190, 205, 0.8)";
       ctx.lineWidth = 1;
       for (let i = 0; i <= 4; i++) {
         const y = padTop + (chartHeight * i / 4);
@@ -434,45 +551,45 @@
       groups.forEach((group, index) => {
         const centerX = padLeft + index * groupWidth + groupWidth / 2;
 
-        const cleanHeight = (cleanValues[index] / maxValue) * chartHeight;
-        const cleanY = padTop + chartHeight - cleanHeight;
-        ctx.fillStyle = "rgba(0,224,150,0.2)";
-        ctx.fillRect(centerX - barWidth - 3, cleanY, barWidth, cleanHeight);
-        ctx.strokeStyle = "rgba(0,224,150,0.5)";
-        ctx.strokeRect(centerX - barWidth - 3, cleanY, barWidth, cleanHeight);
+        const mediumHeight = (mediumValues[index] / maxValue) * chartHeight;
+        const mediumY = padTop + chartHeight - mediumHeight;
+        ctx.fillStyle = "rgba(31, 143, 95, 0.18)";
+        ctx.fillRect(centerX - barWidth - 3, mediumY, barWidth, mediumHeight);
+        ctx.strokeStyle = "rgba(31, 143, 95, 0.45)";
+        ctx.strokeRect(centerX - barWidth - 3, mediumY, barWidth, mediumHeight);
 
-        const fraudHeight = (fraudValues[index] / maxValue) * chartHeight;
-        const fraudY = padTop + chartHeight - fraudHeight;
-        ctx.fillStyle = "rgba(255,69,96,0.25)";
-        ctx.fillRect(centerX + 3, fraudY, barWidth, fraudHeight);
-        ctx.strokeStyle = "rgba(255,69,96,0.6)";
-        ctx.strokeRect(centerX + 3, fraudY, barWidth, fraudHeight);
+        const highHeight = (highValues[index] / maxValue) * chartHeight;
+        const highY = padTop + chartHeight - highHeight;
+        ctx.fillStyle = "rgba(199, 58, 75, 0.2)";
+        ctx.fillRect(centerX + 3, highY, barWidth, highHeight);
+        ctx.strokeStyle = "rgba(199, 58, 75, 0.5)";
+        ctx.strokeRect(centerX + 3, highY, barWidth, highHeight);
 
-        ctx.fillStyle = "rgba(74,96,112,1)";
-        ctx.font = "10px 'IBM Plex Mono'";
+        ctx.fillStyle = "rgba(95, 111, 130, 1)";
+        ctx.font = "10px sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(group, centerX, height - padBottom + 18);
 
-        if (cleanValues[index] > 0) {
-          ctx.fillStyle = "rgba(0,224,150,0.7)";
-          ctx.font = "9px 'IBM Plex Mono'";
-          ctx.fillText(cleanValues[index], centerX - barWidth / 2 - 3, cleanY - 4);
+        if (mediumValues[index] > 0) {
+          ctx.fillStyle = "rgba(31, 143, 95, 0.75)";
+          ctx.font = "9px sans-serif";
+          ctx.fillText(mediumValues[index], centerX - barWidth / 2 - 3, mediumY - 4);
         }
 
-        if (fraudValues[index] > 0) {
-          ctx.fillStyle = "rgba(255,69,96,0.8)";
-          ctx.font = "9px 'IBM Plex Mono'";
-          ctx.fillText(fraudValues[index], centerX + barWidth / 2 + 3, fraudY - 4);
+        if (highValues[index] > 0) {
+          ctx.fillStyle = "rgba(199, 58, 75, 0.85)";
+          ctx.font = "9px sans-serif";
+          ctx.fillText(highValues[index], centerX + barWidth / 2 + 3, highY - 4);
         }
       });
     }
-    //page reset
+
+    // returns to page one on filter change
     function resetToFirstPage() {
       currentPage = 1;
     }
 
-
-    //run demo and fetch data from backend
+    // sends request to  backend refreshes the dashboard
     async function runDemo() {
       setLoading(true);
       setStatus("Connecting to Julia backend...");
@@ -509,6 +626,11 @@
     });
 
     typeFilter.addEventListener("change", () => {
+      resetToFirstPage();
+      renderTable();
+    });
+
+    riskFilter.addEventListener("change", () => {
       resetToFirstPage();
       renderTable();
     });

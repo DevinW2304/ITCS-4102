@@ -1,21 +1,25 @@
-/*root styles*/
+/* main color and font setup */
 :root {
-  --bg:        #080c10;
-  --surface:   #0d1117;
-  --border:    #1c2430;
-  --border-lit:#2a3a50;
-  --text:      #c8d6e5;
-  --muted:     #4a6070;
-  --dim:       #2c3e50;
-  --accent:    #00e5ff;
-  --accent-dim:#004d5c;
-  --danger:    #ff4560;
-  --danger-dim:#3a0a10;
-  --safe:      #00e096;
-  --safe-dim:  #003d28;
-  --warn:      #ffc107;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'Syne', sans-serif;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-soft: #f9fbfd;
+  --border: #d9e1ea;
+  --border-strong: #bcc8d6;
+  --text: #1f2a37;
+  --muted: #5f6f82;
+  --dim: #8b98a7;
+  --accent: #2f6fed;
+  --accent-soft: #e8f0ff;
+  --danger: #c73a4b;
+  --danger-soft: #fdecef;
+  --safe: #1f8f5f;
+  --safe-soft: #e9f7f0;
+  --warn: #b7791f;
+  --warn-soft: #fff6e5;
+  --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 6px 18px rgba(16, 24, 40, 0.06);
 }
 
 *, *::before, *::after {
@@ -24,7 +28,7 @@
   padding: 0;
 }
 
-/*smooth scroll*/
+/* makes moving around the page feel a little smoother */
 html {
   scroll-behavior: smooth;
 }
@@ -32,25 +36,25 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 14px;
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* header */
+/* header area */
 header {
   border-bottom: 1px solid var(--border);
   padding: 0 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  height: 64px;
   position: sticky;
   top: 0;
-  background: rgba(8, 12, 16, 0.95);
-  backdrop-filter: blur(12px);
+  background: rgba(245, 247, 250, 0.96);
+  backdrop-filter: blur(8px);
   z-index: 100;
 }
 
@@ -61,61 +65,45 @@ header {
 }
 
 .wordmark {
-  font-family: var(--mono);
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  color: #fff;
-}
-
-.wordmark span {
-  color: var(--accent);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0;
+  color: var(--text);
 }
 
 .header-tag {
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  font-size: 12px;
   color: var(--muted);
   border-left: 1px solid var(--border);
-  padding-left: 20px;
+  padding-left: 16px;
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
-
-/*feedback dot*/
+/* little status dot near the top */
 .live-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--muted);
-  transition: background 0.3s;
+  background: var(--dim);
+  transition: background 0.25s ease;
 }
 
 .live-dot.active {
   background: var(--safe);
-  box-shadow: 0 0 8px var(--safe);
-  animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-
-/*feedback status message*/
 #statusMessage,
 .status-text {
-  font-family: Arial, sans-serif;
+  font-family: var(--sans);
   font-size: 12px;
   font-weight: 400;
   color: var(--muted);
-  letter-spacing: 0;
   white-space: nowrap;
   line-height: 1.2;
   transition: color 0.2s ease;
@@ -131,114 +119,80 @@ header {
   color: var(--safe);
 }
 
-/* run button */
+/* run button in the header */
 #analyzeButton {
-  font-family: var(--mono);
-  font-size: 11px;
+  font-family: var(--sans);
+  font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 7px 18px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-
-#analyzeButton::before {
-  content: '';
-  position: absolute;
-  inset: 0;
   background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.2s ease;
-  z-index: 0;
-}
-
-#analyzeButton:hover::before {
-  transform: scaleX(1);
+  color: #fff;
+  border: 1px solid var(--accent);
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 #analyzeButton:hover {
-  color: var(--bg);
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+  background: #245fd0;
+  border-color: #245fd0;
 }
 
-#analyzeButton span {
-  position: relative;
-  z-index: 1;
+#analyzeButton:active {
+  transform: translateY(1px);
 }
 
 #analyzeButton:disabled {
-  opacity: 0.4;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
-#analyzeButton:disabled::before {
-  display: none;
-}
-
-/* page margins/padding */
+/* main page spacing */
 main {
   max-width: 1340px;
   margin: 0 auto;
   padding: 28px 32px 64px;
 }
 
-/* section label */
+/* small section labels used above each area */
 .section-label {
-  font-size: 10px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--muted);
-  text-transform: uppercase;
+  text-transform: none;
   margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* overview grid */
+/* top summary cards */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
+  gap: 14px;
   margin-bottom: 28px;
 }
 
 .stat-cell {
   background: var(--surface);
-  padding: 20px 20px 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 18px 16px;
   position: relative;
-  transition: background 0.15s;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
 }
 
 .stat-cell:hover {
-  background: #111820;
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .stat-label {
-  font-family: Arial, sans-serif;
+  font-family: var(--sans);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0;
   color: var(--muted);
-  text-transform: none;
   margin-bottom: 10px;
 }
 
@@ -246,12 +200,12 @@ main {
   font-family: var(--sans);
   font-size: 28px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   line-height: 1;
   transition: color 0.3s;
 }
 
-/* severity colors */
+/* color coding for different kinds of stat boxes */
 .stat-cell.danger .stat-value { color: var(--danger); }
 .stat-cell.warn .stat-value { color: var(--warn); }
 .stat-cell.safe .stat-value { color: var(--safe); }
@@ -261,9 +215,10 @@ main {
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 2px;
+  height: 3px;
   width: 0%;
-  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 0 0 10px 10px;
+  transition: width 0.8s ease;
 }
 
 .stat-cell.danger .stat-bar { background: var(--danger); }
@@ -272,11 +227,11 @@ main {
 .stat-cell.accent .stat-bar { background: var(--accent); }
 .stat-cell:not([class*=' ']) .stat-bar { background: var(--muted); }
 
-/* main content split */
+/* two-column layout for the dashboard */
 .two-col {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 28px;
   align-items: start;
 }
@@ -288,9 +243,10 @@ main {
 .panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 20px 24px;
+  border-radius: 10px;
+  padding: 20px 22px;
   min-width: 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .panel-stack {
@@ -299,21 +255,19 @@ main {
 
 .panel-title {
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: #fff;
+  color: var(--text);
   margin-bottom: 4px;
 }
 
 .panel-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   margin-bottom: 18px;
-  letter-spacing: 0.02em;
 }
 
-/* rule panel */
+/* rows used in the side information panels */
 .rule-entry {
   display: flex;
   align-items: baseline;
@@ -327,12 +281,11 @@ main {
 }
 
 .rule-key {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  width: 70px;
+  width: 110px;
   flex-shrink: 0;
+  font-weight: 600;
 }
 
 .rule-val {
@@ -348,17 +301,17 @@ main {
 .rule-or {
   color: var(--muted);
   font-size: 11px;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 
 .rule-warn {
   color: var(--warn);
 }
 
-/* filters */
+/* filter inputs above the table */
 .filters {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
   gap: 8px;
   margin-bottom: 14px;
 }
@@ -367,15 +320,15 @@ main {
 .filters select,
 .rows-control select {
   width: 100%;
-  padding: 9px 12px;
-  background: var(--bg);
+  padding: 10px 12px;
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: 6px;
   color: var(--text);
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 12px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   appearance: none;
   -webkit-appearance: none;
 }
@@ -387,7 +340,8 @@ main {
 .filters input:focus,
 .filters select:focus,
 .rows-control select:focus {
-  border-color: var(--border-lit);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
 }
 
 .results-meta {
@@ -405,9 +359,8 @@ main {
 }
 
 .results-count {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
-  letter-spacing: 0.05em;
 }
 
 .results-count strong {
@@ -421,7 +374,7 @@ main {
 }
 
 .rows-control label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 
@@ -433,9 +386,8 @@ main {
 .legend {
   display: flex;
   gap: 16px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
-  letter-spacing: 0.08em;
 }
 
 .legend-item {
@@ -445,45 +397,46 @@ main {
 }
 
 .legend-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 .legend-dot.fraud { background: var(--danger); }
 .legend-dot.clean { background: var(--safe); }
 
-/* table */
+/* table area */
 .table-wrap {
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 8px;
   overflow-x: auto;
   overflow-y: hidden;
+  background: #fff;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  font-family: var(--sans);
 }
 
 thead {
-  background: var(--bg);
+  background: var(--surface-soft);
   border-bottom: 1px solid var(--border);
 }
 
 th {
-  padding: 10px 14px;
+  padding: 12px 14px;
   text-align: left;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 700;
   color: var(--muted);
+  text-transform: none;
 }
 
 tbody tr {
   border-bottom: 1px solid var(--border);
-  transition: background 0.1s;
+  transition: background 0.1s ease;
 }
 
 tbody tr:last-child {
@@ -491,11 +444,11 @@ tbody tr:last-child {
 }
 
 tbody tr:hover {
-  background: rgba(255, 255, 255, 0.025);
+  background: #fafcff;
 }
 
 td {
-  padding: 11px 14px;
+  padding: 12px 14px;
   font-size: 12px;
   color: var(--text);
   vertical-align: middle;
@@ -507,24 +460,23 @@ td {
 }
 
 .td-type {
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .td-type.transfer { color: var(--warn); }
-.td-type.cash-out { color: #ff9f43; }
+.td-type.cash-out { color: #c56a10; }
 
 .td-amount {
-  color: #fff;
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 600;
 }
 
 .td-addr {
   font-size: 11px;
   color: var(--muted);
-  max-width: 130px;
+  max-width: 150px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -533,51 +485,49 @@ td {
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 700;
   text-transform: uppercase;
-  padding: 3px 9px;
-  border-radius: 2px;
+  padding: 4px 9px;
+  border-radius: 999px;
 }
 
 .badge.fraud {
-  background: var(--danger-dim);
+  background: var(--danger-soft);
   color: var(--danger);
-  border: 1px solid rgba(255, 69, 96, 0.25);
+  border: 1px solid #f6c7cf;
 }
 
 .badge.clean {
-  background: var(--safe-dim);
+  background: var(--safe-soft);
   color: var(--safe);
-  border: 1px solid rgba(0, 224, 150, 0.2);
+  border: 1px solid #cceedd;
 }
 
 .badge::before {
   content: '';
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: currentColor;
 }
 
-/* empty state */
+/* shown when there are no rows to display */
 .empty-state {
   padding: 48px 0;
   text-align: center;
   color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.05em;
+  font-size: 13px;
 }
 
 .empty-state .empty-icon {
   font-size: 28px;
   margin-bottom: 12px;
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
-/* pagination */
+/* table pagination controls */
 .pagination {
   display: flex;
   justify-content: flex-end;
@@ -587,31 +537,33 @@ td {
 }
 
 .pagination span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 
 .pagination button {
-  font-family: var(--mono);
+  font-family: var(--sans);
   font-size: 11px;
-  background: transparent;
+  background: #fff;
   color: var(--accent);
-  border: 1px solid var(--border-lit);
-  padding: 6px 10px;
-  border-radius: 2px;
+  border: 1px solid var(--border);
+  padding: 7px 11px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .pagination button:hover:not(:disabled) {
   border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .pagination button:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* chart */
+/* simple side chart area */
 #breakdownChart {
   width: 100%;
   display: block;
@@ -619,26 +571,25 @@ td {
 
 .chart-fallback {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   text-align: center;
   padding: 40px 0;
 }
 
-/* loading bar */
+/* loading bar across the top while analysis runs */
 .loading-bar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 2px;
+  height: 3px;
   width: 0%;
   background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
   z-index: 9998;
   transition: width 0.3s ease;
 }
 
 .loading-bar.running {
-  animation: indeterminate 1.4s ease infinite;
+  animation: indeterminate 1.2s ease infinite;
 }
 
 @keyframes indeterminate {
@@ -647,14 +598,15 @@ td {
 }
 
 @keyframes countUp {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .stat-value.animating {
-  animation: countUp 0.4s ease forwards;
+  animation: countUp 0.35s ease forwards;
 }
 
+/* layout adjustments for smaller screens */
 @media (max-width: 1200px) {
   .two-col {
     grid-template-columns: 1fr;
@@ -674,6 +626,10 @@ td {
 
   header {
     padding: 0 16px;
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .stats-grid {
@@ -699,7 +655,7 @@ td {
   }
 }
 
-/* footer */
+/* footer section */
 footer {
   border-top: 1px solid var(--border);
   padding: 32px;
@@ -716,36 +672,31 @@ footer {
 }
 
 .footer-brand {
-  font-family: var(--mono);
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: 0.04em;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
   margin-bottom: 8px;
 }
 
-.footer-brand span {
-  color: var(--accent);
-}
-
 .footer-desc {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
-  max-width: 420px;
+  max-width: 460px;
   line-height: 1.7;
 }
 
 .footer-meta {
   text-align: right;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--dim);
-  line-height: 2;
+  line-height: 1.9;
 }
 
 .footer-meta a {
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.15s;
+  transition: color 0.15s ease;
 }
 
 .footer-meta a:hover {
@@ -760,8 +711,7 @@ footer {
 
 .footer-copy {
   margin-top: 16px;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--dim);
-  letter-spacing: 0.08em;
   text-align: center;
-}   
+}
